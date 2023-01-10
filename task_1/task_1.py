@@ -37,7 +37,7 @@ class Task1:
 
     def get_data(self) -> bool:
         """imports words.txt/csv file into python list.
-        
+
         Data is imported using the filename attribute string.
         the file type can be csv or txt where each new data entry is
         stored on a newline. Data stored in according attribute.
@@ -53,7 +53,6 @@ class Task1:
 
         return False
 
-
     def search(self) -> int | str:
         """Ternary search.
 
@@ -67,9 +66,10 @@ class Task1:
         Raises:
             RuntimeError: When the data is not imported or search term is not found.
         """
-        
+
         if not self.data:
-            raise RuntimeError("variable (data) is empty, please call function get_data")
+            raise RuntimeError(
+                "variable (data) is empty, please call function get_data")
 
         start = 0
         end = len(self.data)
