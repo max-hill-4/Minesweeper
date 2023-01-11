@@ -29,8 +29,8 @@ class Minesweeper:
     def create_board(self):
         """docstring"""
 
-        size = 9
-        mines = random.sample(range(size**2), 10)
+        size = self.difficulty[0]
+        mines = random.sample(range(size**2), self.difficulty[2])
         self.game_board = [[0]*size for _ in range(size)]
         self.visible_game_board = [[' ']*size for _ in range(size)]
 
@@ -88,26 +88,26 @@ class Minesweeper:
     def print_board(self):
         """docstring"""
 
-        x, y = self.difficulty[], 9
+        width, height = self.difficulty[0], self.difficulty[1]
         letters = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
                    'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')
         print("\t\t\tMINESWEEPER\n")
         print('      ', end='')
-        for _ in range(x):
+        for _ in range(width):
             print(f'{_+1}     ', end='')
         print()
-        print('   '+'_'*x*6)
+        print('   '+'_'*width*6)
 
         for index, row in enumerate(self.visible_game_board):
             print('   ', end='')
-            print('|     '*x + '|')
+            print('|     '*width + '|')
             print(f'{letters[index]}  ', end='')
             for _ in row:
                 print(f'|  {_}  ', end='')
 
             print('|')
             print('   ', end='')
-            print('|_____'*x + '|')
+            print('|_____'*width + '|')
 
     def game_play(self):
         """docstring"""
@@ -147,12 +147,13 @@ class Minesweeper:
 
     def start(self):
         """docstring"""
-        self.create_board()
+        
         self.name = input(
             '\t\tWelcome to my Minesweeper!! \n\nEnter your name:')
         self.difficulty = self.levels[int(
             input("\nThe three difficulty's are 9x9(1), 16x16(2), 30x16(3).\nChoose your difficulty:"))]
         
+        self.create_board()
         start_time = perf_counter()
 
         while self.won is None:
