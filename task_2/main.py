@@ -20,99 +20,110 @@ class Minesweeper:
         self.game_board = []
         self.visible_game_board = []
         self.terminate = False
+
     def create_board(self):
         """docstring"""
 
         size = 9
         mines = random.sample(range(size**2), 10)
-        print(mines)
         self.game_board = [[0]*size for _ in range(size)]
         self.visible_game_board = [[' ']*size for _ in range(size)]
+
         for mine in mines:
             row, column = mine//9, mine % 9
             self.game_board[row][column] = 'M'
-            area = {}
-
-            top = mine < 9
-            bottom = mine > 71
-            left = (mine % 9) == 0 or mine == 0
-            right = (mine % 9) == 8 or mine == 8
-
-            # could be put in seperate function! - although is not recalled so idk.
-            if not top:
-                area[(row-1, column)] = self.game_board[row -
-                                                        1][column]  # Top Middle
-
-                if not right:
-                    area[(row-1, column+1)] = self.game_board[row -
-                                                              1][column+1]  # Top Right
-
-                if not left:
-                    area[(row-1, column-1)] = self.game_board[row -
-                                                              1][column-1]  # Top Left
-
-            if not bottom:
-                area[(row+1, column)] = self.game_board[row +
-                                                        1][column]  # Bottom Middle
-
-                if not right:
-                    area[(row+1, column+1)] = self.game_board[row +
-                                                              1][column+1]  # Bottom Right
-
-                if not left:
-                    area[(row+1, column-1)] = self.game_board[row +
-                                                              1][column-1]  # Bottom Left
-
-            if not left:
-                # Middle Left
-                area[(row, column-1)] = self.game_board[row][column-1]
-
-            if not right:
-                # Middle Right
-                area[(row, column+1)] = self.game_board[row][column+1]
-
-            for key, value in area.items():
+            for key, value in self.check_area((row,column), 'M'):
                 if value != 'M':
                     self.game_board[key[0]][key[1]] += 1
+
+    def check_area(self, square:tuple, target:str):
+        """docstring"""
+
+        print(square)
+        area = {}
+        row, column = square
+        # Its a bit confusing as player uses row 1 and im using row 0 doe. - fix later ennit.
+        top = row == 0
+        bottom = row == 8
+        left = column == 0
+        right = column == 8
+
+        if not top:
+            area[(row-1, column)] = self.game_board[row -
+                                                    1][column]  # Top Middle
+
+            if not right:
+                area[(row-1, column+1)] = self.game_board[row -
+                                                          1][column+1]  # Top Right
+
+            if not left:
+                area[(row-1, column-1)] = self.game_board[row -
+                                                          1][column-1]  # Top Left
+
+        if not bottom:
+            area[(row+1, column)] = self.game_board[row +
+                                                    1][column]  # Bottom Middle
+
+            if not right:
+                area[(row+1, column+1)] = self.game_board[row +
+                                                          1][column+1]  # Bottom Right
+
+            if not left:
+                area[(row+1, column-1)] = self.game_board[row +
+                                                          1][column-1]  # Bottom Left
+
+        if not left:
+            # Middle Left
+            area[(row, column-1)] = self.game_board[row][column-1]
+
+        if not right:
+            # Middle Right
+            area[(row, column+1)] = self.game_board[row][column+1]
+
+        return area.items()
 
     def print_board(self):
         """docstring"""
 
         size = 9
-        letters = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')
+        letters = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+                   'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')
         print("\t\t\tMINESWEEPER\n")
-        print('      ',end='')
+        print('      ', end='')
         for _ in range(size):
-            print(f'{_+1}     ',end='')
+            print(f'{_+1}     ', end='')
         print()
         print('   '+'_'*size*6)
 
         for index, row in enumerate(self.visible_game_board):
-            print('   ',end='')
+            print('   ', end='')
             print('|     '*size + '|')
-            print(f'{letters[index]}  ',end='')
+            print(f'{letters[index]}  ', end='')
             for _ in row:
                 print(f'|  {_}  ', end='')
 
             print('|')
-            print('   ',end='')
+            print('   ', end='')
             print('|_____'*size + '|')
 
     def game_play(self):
         """docstring"""
         action = input('Open(O) or Flag(F)? \n').lower()
         cell = input('Enter Row, Column\n').lower()
-        cell = ord(cell[0])-97,int(cell[1])-1
+        row, column = ord(cell[0])-97, int(cell[1])-1
+        cell_data = self.game_board[row][column]
         if action == 'o':
-            if self.game_board[cell[0]][cell[1]] == 'M':
+            if cell_data == 'M':
                 print('you have lost!')
                 self.visible_game_board = self.game_board
 
-
             else:
-                self.visible_game_board[cell[0]][cell[1]] = self.game_board[cell[0]][cell[1]]
+                if cell_data == 0:
+                    self.check_data()
+                self.visible_game_board[row][column] = cell_data
         if action == 'f':
-            self.visible_game_board[cell[0]][cell[1]] = 'F'
+            self.visible_game_board[row][column] = 'F'
+
 
 if __name__ == "__main__":
     m = Minesweeper()
