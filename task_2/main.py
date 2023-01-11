@@ -19,6 +19,7 @@ class Minesweeper:
         """docstring"""
         self.game_board = []
         self.visible_game_board = []
+        self.terminate = False
     def create_board(self):
         """docstring"""
 
@@ -104,18 +105,19 @@ class Minesweeper:
         cell = ord(cell[0])-97,int(cell[1])-1
         if action == 'o':
             if self.game_board[cell[0]][cell[1]] == 'M':
-                print('you lose!')
-                return False
+                print('you have lost!')
+                self.visible_game_board = self.game_board
+
 
             else:
-                self.visible_game_board[cell[0]][cell[1]] = str(self.game_board[cell[0]][cell[1]])
-                return True
+                self.visible_game_board[cell[0]][cell[1]] = self.game_board[cell[0]][cell[1]]
         if action == 'f':
-            print('yipee')
+            self.visible_game_board[cell[0]][cell[1]] = 'F'
 
 if __name__ == "__main__":
     m = Minesweeper()
     m.create_board()
     m.print_board()
-    while m.game_play():
-            m.print_board()
+    while not m.terminate:
+        m.print_board()
+        m.game_play()
