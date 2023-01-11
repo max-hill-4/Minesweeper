@@ -32,14 +32,12 @@ class Minesweeper:
         for mine in mines:
             row, column = mine//9, mine % 9
             self.game_board[row][column] = 'M'
-            for key, value in self.check_area((row,column), 'M'):
+            for key, value in self.check_area((row,column)):
                 if value != 'M':
                     self.game_board[key[0]][key[1]] += 1
 
-    def check_area(self, square:tuple, target:str):
+    def check_area(self, square:tuple):
         """docstring"""
-
-        print(square)
         area = {}
         row, column = square
         # Its a bit confusing as player uses row 1 and im using row 0 doe. - fix later ennit.
@@ -116,10 +114,19 @@ class Minesweeper:
             if cell_data == 'M':
                 print('you have lost!')
                 self.visible_game_board = self.game_board
-
+                m.terminate = True
             else:
-                if cell_data == 0:
-                    self.check_data()
+                visited = set()
+                def show_mines(row, column):
+                    for key, value in self.check_area((row, column)):
+                        if value == 0 and key not in visited:
+                            self.visible_game_board[key[0]][key[1]] = value
+                            visited.add(key)
+                            show_mines(key[0], key[1])
+                        else:
+                            self.visible_game_board[key[0]][key[1]] = value
+
+                show_mines(row, column)
                 self.visible_game_board[row][column] = cell_data
         if action == 'f':
             self.visible_game_board[row][column] = 'F'
