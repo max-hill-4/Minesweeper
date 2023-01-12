@@ -22,20 +22,22 @@ class Minesweeper:
         self.visible_game_board = []
         self.won = None
         self.difficulty = None
-        self.levels = {1:(9, 9, 10), 2:(16, 16, 40), 3:(16, 30, 99)}
+        self.width, self.height = None, None
+        self.levels = {1: (9, 9, 10), 2: (16, 16, 40), 3: (30, 16, 99)}
         self.name = ''
-        
-        
+        self.flagged_mines = 0
+
     def create_board(self):
         """docstring"""
 
-        size = self.difficulty[0]
-        mines = random.sample(range(size**2), self.difficulty[2])
-        self.game_board = [[0]*size for _ in range(size)]
-        self.visible_game_board = [[' ']*size for _ in range(size)]
+        mines = random.sample(
+            range(self.width*self.height), self.difficulty[2])
+        self.game_board = [[0]*self.width for _ in range(self.height)]
+        self.visible_game_board = [
+            [' ']*self.width for _ in range(self.height)]
 
         for mine in mines:
-            row, column = mine//9, mine % 9
+            row, column = mine//self.width, mine % self.height
             self.game_board[row][column] = 'M'
             for key, value in self.check_area((row, column)):
                 if value != 'M':
@@ -45,11 +47,11 @@ class Minesweeper:
         """docstring"""
         area = {}
         row, column = square
-        
+
         top = row == 0
-        bottom = row == 8
+        bottom = row == self.height-1
         left = column == 0
-        right = column == 8
+        right = column == self.width-1
 
         if not top:
             area[(row-1, column)] = self.game_board[row -
@@ -88,32 +90,35 @@ class Minesweeper:
     def print_board(self):
         """docstring"""
 
-        width, height = self.difficulty[0], self.difficulty[1]
         letters = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
                    'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')
         print("\t\t\tMINESWEEPER\n")
         print('      ', end='')
-        for _ in range(width):
-            print(f'{_+1}     ', end='')
+        for _ in range(self.width):
+            if _ > 8:
+                print(f'{_+1}    ', end='')
+            else:
+                print(f'{_+1}     ', end='')
         print()
-        print('   '+'_'*width*6)
+        print('   '+'_'*self.width*6)
 
         for index, row in enumerate(self.visible_game_board):
             print('   ', end='')
-            print('|     '*width + '|')
+            print('|     '*self.width + '|')
             print(f'{letters[index]}  ', end='')
             for _ in row:
                 print(f'|  {_}  ', end='')
 
             print('|')
             print('   ', end='')
-            print('|_____'*width + '|')
+            print('|_____'*self.width + '|')
 
     def game_play(self):
         """docstring"""
         action = input('Open(O) or Flag(F)? \n').lower()
         cell = input('Enter Row, Column\n').lower()
-        row, column = ord(cell[0])-97, int(cell[1])-1
+        #sanitize data here!
+        row, column = ord(cell[0])-97, int(cell[1:])-1
         cell_data = self.game_board[row][column]
         if action == 'o':
             if cell_data == 'M':
@@ -144,20 +149,26 @@ class Minesweeper:
                 self.visible_game_board[row][column] = ' '
             else:
                 self.visible_game_board[row][column] = 'F'
+            
+            if cell_data == 'M':
+                self.flagged_mines += 1
+            
+        print(f'There is {self.difficulty[2] - self.flagged_mines} mines unflagged.')
 
+        if self.flagged_mines == self.difficulty[2]:
+            self.won = True
     def start(self):
         """docstring"""
-        
+
         self.name = input(
             '\t\tWelcome to my Minesweeper!! \n\nEnter your name:')
         self.difficulty = self.levels[int(
-            input("\nThe three difficulty's are 9x9(1), 16x16(2), 30x16(3).\nChoose your difficulty:"))]
-        
+        input("\nThe three difficulty's are 9x9(1), 16x16(2), 30x16(3).\nChoose your difficulty:"))]
+        self.width, self.height = self.difficulty[0], self.difficulty[1]
         self.create_board()
         start_time = perf_counter()
 
         while self.won is None:
-            print(self.won)
             self.print_board()
             self.game_play()
 
@@ -165,6 +176,9 @@ class Minesweeper:
 
         if self.won:
             print(f'Congratulations {self.name} you have won!')
+            line = (f'{self.name}, {self.difficulty}, {round(end_time - start_time, 1)}')
+            with open('leaderboard.txt', 'w', encoding='utf-8') as file:
+                file.write(line)
         else:
             print(f'You have lost {self.name} better luck next time!')
 
