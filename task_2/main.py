@@ -91,21 +91,23 @@ class Minesweeper:
                    'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')
         print("\t\t\tMINESWEEPER\n")
         print('      ', end='')
+        # Prints column numbers.
         for _ in range(self.width):
+            # Adds extra space to numbers less than 10.
             if _ > 8:
                 print(f'{_+1}    ', end='')
             else:
                 print(f'{_+1}     ', end='')
         print()
         print('   '+'_'*self.width*6)
-
         for index, row in enumerate(self.visible_game_board):
+            # Prints row letters.
             print('   ', end='')
             print('|     '*self.width + '|')
             print(f'{letters[index]}  ', end='')
+            # Prints row data.
             for _ in row:
                 print(f'|  {_}  ', end='')
-
             print('|')
             print('   ', end='')
             print('|_____'*self.width + '|')
@@ -119,6 +121,7 @@ class Minesweeper:
             return
         if action != 'h':
             cell = input('Enter Row, Column\n').lower()
+            # Checks if cell is valid.
             try:
                 row, column = ord(cell[0])-97, int(cell[1:])-1
             except ValueError:
