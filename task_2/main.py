@@ -8,17 +8,15 @@ CMP1902M Assessment Task 2: Implement the Minesweeper game
 
 """
 
-#Todo
-# 1. Add docstrings to all functions.
-# 2. Fix bug where mines for 30x16 board are not being generated correctly.
-# 3. Hand in assignment before 4pm.
-
 import random
 from time import perf_counter
 
 
 class Minesweeper:
-    """class doctring
+    """Main singleton class to handle all functions.
+
+    Creates a minesweeper game with 3 difficulty levels using ASCII art 
+    in the console.
     """
 
     def __init__(self):
@@ -32,7 +30,12 @@ class Minesweeper:
         self.flagged_mines = 0
 
     def create_board(self):
-        """docstring"""
+        """Sets up gameboard ready for play
+        
+        Creates 2 empty lists of correct size for visible gameboard
+        and actual data values. Random mines are generated and appended to the 
+        list, and then cues are calculated for such mine. 
+        """
 
         # Creates list of correct size and range for mines.
         mines = random.sample(range(self.width*self.height), self.mines)
@@ -52,7 +55,15 @@ class Minesweeper:
                     self.game_board[key[0]][key[1]] += 1
 
     def check_area(self, square: tuple):
-        """docstring"""
+        """Function to get all squares surrounding location
+        
+        Used for checking if surrounding area has 0's or bombs nearby.
+
+        Returns:
+            A dictionary that contains the location of the square and value
+        Args:
+            square: tuple that holds the location in the format row,column
+        """
         area = {}
         row, column = square
 
@@ -90,7 +101,11 @@ class Minesweeper:
         return area.items()
 
     def print_board(self):
-        """docstring"""
+        """Outputs board to console
+        
+        Uses self.width and self.height to work out how many times to 
+        print according symbols.
+        """
 
         letters = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
                    'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')
@@ -118,7 +133,11 @@ class Minesweeper:
             print('|_____'*self.width + '|')
 
     def game_play(self):
-        """docstring"""
+        """Allows for user input and changes game accordingly
+        
+        Allows for 3 different inputs and reacts accordingly to 
+        traditional minesweeper rules.
+        """
         print(f'There is {self.mines - self.flagged_mines} mines unflagged.')
         action = input('Open(O) or Flag(F) or Hint(H)? \n').lower()
         if not (action == 'f' or action == 'o' or action == 'h'):
@@ -188,7 +207,12 @@ class Minesweeper:
             self.won = True
 
     def start(self):
-        """docstring"""
+        """Called to begin the game
+        
+        Function that calls the functions to create the game, and also 
+        takes data such as name and time to append to the leaderboard file.
+        This function also handles the gamestate and when to terminate.
+        """
 
         self.name = input(
             '\t\tWelcome to my Minesweeper!! \n\nEnter your name:')
