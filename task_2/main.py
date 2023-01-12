@@ -21,10 +21,8 @@ class Minesweeper:
         self.game_board = []
         self.visible_game_board = []
         self.won = None
-        self.difficulty = None
         self.hint = False
         self.width, self.height, self.mines = None, None, None
-        self.levels = {1: (9, 9, 10), 2: (16, 16, 40), 3: (30, 16, 99)}
         self.name = ''
         self.flagged_mines = 0
 
@@ -184,14 +182,15 @@ class Minesweeper:
         self.name = input(
             '\t\tWelcome to my Minesweeper!! \n\nEnter your name:')
         try:
-            self.difficulty = int(
+            difficulty = int(
                 input("\nThe three difficulty's are 9x9(1), 16x16(2), 30x16(3).\nChoose your difficulty:"))
         except ValueError:
             print('Please enter a number')
             self.start()
 
-        self.width, self.height, self.mines = self.levels[self.difficulty][
-            0], self.levels[self.difficulty][1], self.levels[self.difficulty][2]
+        levels = {1: (9, 9, 10), 2: (16, 16, 40), 3: (30, 16, 99)}
+        self.width, self.height, self.mines = levels[difficulty][
+            0], levels[difficulty][1], levels[difficulty][2]
         self.create_board()
         start_time = perf_counter()
 
