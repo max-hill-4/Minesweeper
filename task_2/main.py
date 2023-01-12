@@ -116,10 +116,21 @@ class Minesweeper:
     def game_play(self):
         """docstring"""
         print(f'There is {self.mines - self.flagged_mines} mines unflagged.')
+
         action = input('Open(O) or Flag(F)? \n').lower()
+        if not (action == 'f' or action == 'o'):
+            print('Invalid action. Try again.')
+            return
         cell = input('Enter Row, Column\n').lower()
         #sanitize data here!
-        row, column = ord(cell[0])-97, int(cell[1:])-1
+        try:
+            row, column = ord(cell[0])-97, int(cell[1:])-1
+        except ValueError:
+            print('Invalid cell. Try again.')
+            return
+        if row < 0 or row > self.height-1 or column < 0 or column > self.width-1:
+            print('Invalid cell. Try again.')
+            return
         cell_data = self.game_board[row][column]
         if action == 'o':
             if cell_data == 'M':
@@ -162,8 +173,13 @@ class Minesweeper:
 
         self.name = input(
             '\t\tWelcome to my Minesweeper!! \n\nEnter your name:')
-        self.difficulty = int(
-        input("\nThe three difficulty's are 9x9(1), 16x16(2), 30x16(3).\nChoose your difficulty:"))
+        try:
+            self.difficulty = int(
+            input("\nThe three difficulty's are 9x9(1), 16x16(2), 30x16(3).\nChoose your difficulty:"))
+        except ValueError:
+            print('Please enter a number')
+            self.start()
+        
         self.width, self.height, self.mines = self.levels[self.difficulty][0], self.levels[self.difficulty][1], self.levels[self.difficulty][2]
         self.create_board()
         start_time = perf_counter()
@@ -176,8 +192,8 @@ class Minesweeper:
 
         if self.won:
             print(f'Congratulations {self.name} you have won!')
-            record = (f'{self.name}, {self.difficulty}, {round(end_time - start_time, 1)}')
-            with open('leaderboard.txt', 'w', encoding='utf-8') as file:
+            record = (f'\n{self.name}, {self.width}x{self.height}, {round(end_time - start_time, 1)}')
+            with open('leaderboard.txt', 'a', encoding='utf-8') as file:
                 file.write(record)
         else:
             print(f'You have lost {self.name} better luck next time!')
