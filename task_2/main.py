@@ -121,7 +121,7 @@ class Minesweeper:
             return
         if action != 'h':
             cell = input('Enter Row, Column\n').lower()
-            # Checks if cell is valid.
+            # Handles unexpected inputs.
             try:
                 row, column = ord(cell[0])-97, int(cell[1:])-1
             except ValueError:
@@ -133,22 +133,25 @@ class Minesweeper:
             cell_data = self.game_board[row][column]
         
         if action == 'o':
+            # If the cell chosen is a mine then the game is over.
             if cell_data == 'M':
                 self.visible_game_board = self.game_board
                 self.won = False
             else:
                 visited = set()
-
+                # Recursive function to show all the cells around a 0 cell.
                 def show_mines(row, column):
-                    # if the cell chosen is 0 then show all the cells around it
+                    # if the cell chosen is 0 then show all the cells around it.
                     if cell_data == 0:
+                        # check all the cells around the cell
                         for key, value in self.check_area((row, column)):
-                            # if the cell is 0 and has not been visited then show it and check its neighbors
+                            # if the cell is 0 and has not been visited then show it and check its neighbors.
                             if value == 0 and key not in visited:
                                 self.visible_game_board[key[0]][key[1]] = value
                                 visited.add(key)
+                                # check the neighbors of the neighbor.
                                 show_mines(key[0], key[1])
-                            # the cell is not 0 so just show it
+                            # The cell is not 0 and has not been visited so show it wihout checking its neighbors.
                             else:
                                 self.visible_game_board[key[0]][key[1]] = value
                     else:
