@@ -8,6 +8,11 @@ CMP1902M Assessment Task 2: Implement the Minesweeper game
 
 """
 
+#Todo
+# 1. Add docstrings to all functions.
+# 2. Fix bug where mines for 30x16 board are not being generated correctly.
+# 3. Hand in assignment before 4pm.
+
 import random
 from time import perf_counter
 
@@ -188,15 +193,14 @@ class Minesweeper:
         self.name = input(
             '\t\tWelcome to my Minesweeper!! \n\nEnter your name:')
         try:
-            difficulty = int(
-input("\nThe three difficulty's are 9x9(1), 16x16(2), 30x16(3).\nChoose your difficulty:"))
+            difficulty = int(input("""\nThe three difficulty's are 9x9(1), 16x16(2), 30x16(3).\n
+            Choose your difficulty:"""))
         except ValueError:
-            print('Please enter a number')
+            print('Please enter a number!')
             self.start()
 
         levels = {1: (9, 9, 10), 2: (16, 16, 40), 3: (30, 16, 99)}
-        self.width, self.height, self.mines = levels[difficulty][
-            0], levels[difficulty][1], levels[difficulty][2]
+        self.width, self.height, self.mines = levels[difficulty]
         self.create_board()
         start_time = perf_counter()
 
