@@ -29,15 +29,19 @@ class Minesweeper:
     def create_board(self):
         """docstring"""
 
-        mines = random.sample(
-            range(self.width*self.height), self.mines)
+        # Creates list of correct size and range for mines.
+        mines = random.sample(range(self.width*self.height), self.mines)
+        # Creates 2d list of correct size and fills with 0's.
         self.game_board = [[0]*self.width for _ in range(self.height)]
-        self.visible_game_board = [
-            [' ']*self.width for _ in range(self.height)]
+        # Creates 2d list of correct size and fills with spaces.
+        self.visible_game_board = [[' ']*self.width for _ in range(self.height)]
 
+        # Adds mines to game board.
         for mine in mines:
+            # Converts 1d list index to 2d list index.
             row, column = mine//self.width, mine % self.height
             self.game_board[row][column] = 'M'
+            # Adds 1 to all adjacent squares.
             for key, value in self.check_area((row, column)):
                 if value != 'M':
                     self.game_board[key[0]][key[1]] += 1
@@ -47,42 +51,36 @@ class Minesweeper:
         area = {}
         row, column = square
 
+        # Boolean checks to see if square is on edge of board.
         top = row == 0
         bottom = row == self.height-1
         left = column == 0
         right = column == self.width-1
-
+        
+        # Checks all adjacent squares and adds them to area dict.
         if not top:
-            area[(row-1, column)] = self.game_board[row -
-                                                    1][column]  # Top Middle
+            area[(row-1, column)] = self.game_board[row-1][column]  # Top Middle
 
             if not right:
-                area[(row-1, column+1)] = self.game_board[row -
-                                                          1][column+1]  # Top Right
+                area[(row-1, column+1)] = self.game_board[row-1][column+1]  # Top Right
 
             if not left:
-                area[(row-1, column-1)] = self.game_board[row -
-                                                          1][column-1]  # Top Left
+                area[(row-1, column-1)] = self.game_board[row-1][column-1]  # Top Left
 
         if not bottom:
-            area[(row+1, column)] = self.game_board[row +
-                                                    1][column]  # Bottom Middle
+            area[(row+1, column)] = self.game_board[row+1][column]  # Bottom Middle
 
             if not right:
-                area[(row+1, column+1)] = self.game_board[row +
-                                                          1][column+1]  # Bottom Right
+                area[(row+1, column+1)] = self.game_board[row+1][column+1]  # Bottom Right
 
             if not left:
-                area[(row+1, column-1)] = self.game_board[row +
-                                                          1][column-1]  # Bottom Left
+                area[(row+1, column-1)] = self.game_board[row+1][column-1]  # Bottom Left
 
         if not left:
-            # Middle Left
-            area[(row, column-1)] = self.game_board[row][column-1]
+            area[(row, column-1)] = self.game_board[row][column-1] # Middle Left
 
         if not right:
-            # Middle Right
-            area[(row, column+1)] = self.game_board[row][column+1]
+            area[(row, column+1)] = self.game_board[row][column+1] # Middle Right
 
         return area.items()
 
