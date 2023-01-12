@@ -131,7 +131,7 @@ class Minesweeper:
                 print('Invalid cell. Try again.')
                 return
             cell_data = self.game_board[row][column]
-        
+
         if action == 'o':
             # If the cell chosen is a mine then the game is over.
             if cell_data == 'M':
@@ -145,13 +145,12 @@ class Minesweeper:
                     if cell_data == 0:
                         # check all the cells around the cell
                         for key, value in self.check_area((row, column)):
-                            # if the cell is 0 and has not been visited then show it and check its neighbors.
                             if value == 0 and key not in visited:
                                 self.visible_game_board[key[0]][key[1]] = value
                                 visited.add(key)
                                 # check the neighbors of the neighbor.
                                 show_mines(key[0], key[1])
-                            # The cell is not 0 and has not been visited so show it wihout checking its neighbors.
+                            # show it wihout checking its neighbors as not 0.
                             else:
                                 self.visible_game_board[key[0]][key[1]] = value
                     else:
@@ -160,23 +159,26 @@ class Minesweeper:
                 self.visible_game_board[row][column] = cell_data
 
         if action == 'f':
+            # If the cell is already flagged then unflag it.
             if self.visible_game_board[row][column] == 'F':
                 self.visible_game_board[row][column] = ' '
             else:
                 self.visible_game_board[row][column] = 'F'
 
+            # If the cell is a mine then add to the flagged_mines.
             if cell_data == 'M':
                 self.flagged_mines += 1
 
         if action == 'h' and not self.hint:
             self.hint = True
+            # Find the first mine and flag it.
             for index, row in enumerate(self.game_board):
                 for index2, column in enumerate(row):
                     if column == 'M':
                         self.visible_game_board[index][index2] = 'F'
                         self.flagged_mines += 1
                         return
-            
+
         if self.flagged_mines == self.mines:
             self.won = True
 
@@ -187,7 +189,7 @@ class Minesweeper:
             '\t\tWelcome to my Minesweeper!! \n\nEnter your name:')
         try:
             difficulty = int(
-                input("\nThe three difficulty's are 9x9(1), 16x16(2), 30x16(3).\nChoose your difficulty:"))
+input("\nThe three difficulty's are 9x9(1), 16x16(2), 30x16(3).\nChoose your difficulty:"))
         except ValueError:
             print('Please enter a number')
             self.start()
