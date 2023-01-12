@@ -22,6 +22,7 @@ class Minesweeper:
         self.visible_game_board = []
         self.won = None
         self.difficulty = None
+        self.hint = False
         self.width, self.height, self.mines = None, None, None
         self.levels = {1: (9, 9, 10), 2: (16, 16, 40), 3: (30, 16, 99)}
         self.name = ''
@@ -116,22 +117,22 @@ class Minesweeper:
     def game_play(self):
         """docstring"""
         print(f'There is {self.mines - self.flagged_mines} mines unflagged.')
-
-        action = input('Open(O) or Flag(F)? \n').lower()
-        if not (action == 'f' or action == 'o'):
+        action = input('Open(O) or Flag(F) or Hint(H)? \n').lower()
+        if not (action == 'f' or action == 'o' or action == 'h'):
             print('Invalid action. Try again.')
             return
-        cell = input('Enter Row, Column\n').lower()
-        #sanitize data here!
-        try:
-            row, column = ord(cell[0])-97, int(cell[1:])-1
-        except ValueError:
-            print('Invalid cell. Try again.')
-            return
-        if row < 0 or row > self.height-1 or column < 0 or column > self.width-1:
-            print('Invalid cell. Try again.')
-            return
-        cell_data = self.game_board[row][column]
+        if action != 'h':
+            cell = input('Enter Row, Column\n').lower()
+            try:
+                row, column = ord(cell[0])-97, int(cell[1:])-1
+            except ValueError:
+                print('Invalid cell. Try again.')
+                return
+            if row < 0 or row > self.height-1 or column < 0 or column > self.width-1:
+                print('Invalid cell. Try again.')
+                return
+            cell_data = self.game_board[row][column]
+        
         if action == 'o':
             if cell_data == 'M':
                 self.visible_game_board = self.game_board
@@ -161,13 +162,22 @@ class Minesweeper:
                 self.visible_game_board[row][column] = ' '
             else:
                 self.visible_game_board[row][column] = 'F'
-            
+
             if cell_data == 'M':
                 self.flagged_mines += 1
 
-
+        if action == 'h' and not self.hint:
+            self.hint = True
+            for index, row in enumerate(self.game_board):
+                for index2, column in enumerate(row):
+                    if column == 'M':
+                        self.visible_game_board[index][index2] = 'F'
+                        self.flagged_mines += 1
+                        return
+            
         if self.flagged_mines == self.mines:
             self.won = True
+
     def start(self):
         """docstring"""
 
@@ -175,12 +185,13 @@ class Minesweeper:
             '\t\tWelcome to my Minesweeper!! \n\nEnter your name:')
         try:
             self.difficulty = int(
-            input("\nThe three difficulty's are 9x9(1), 16x16(2), 30x16(3).\nChoose your difficulty:"))
+                input("\nThe three difficulty's are 9x9(1), 16x16(2), 30x16(3).\nChoose your difficulty:"))
         except ValueError:
             print('Please enter a number')
             self.start()
-        
-        self.width, self.height, self.mines = self.levels[self.difficulty][0], self.levels[self.difficulty][1], self.levels[self.difficulty][2]
+
+        self.width, self.height, self.mines = self.levels[self.difficulty][
+            0], self.levels[self.difficulty][1], self.levels[self.difficulty][2]
         self.create_board()
         start_time = perf_counter()
 
@@ -192,7 +203,8 @@ class Minesweeper:
 
         if self.won:
             print(f'Congratulations {self.name} you have won!')
-            record = (f'\n{self.name}, {self.width}x{self.height}, {round(end_time - start_time, 1)}')
+            record = (
+                f'\n{self.name}, {self.width}x{self.height}, {round(end_time - start_time, 1)}')
             with open('leaderboard.txt', 'a', encoding='utf-8') as file:
                 file.write(record)
         else:
